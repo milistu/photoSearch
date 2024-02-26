@@ -4,10 +4,12 @@ FROM python:3.10.13-slim
 # Set the working directory in the container
 WORKDIR /user/src/app
 
+# Install system dependencies
+RUN apt-get update && apt-get install -y gcc \
+    && rm -rf /var/lib/apt/lists/*
+
 # Install poetry
 RUN pip install poetry
-
-# ENV PATH="/root/.local/bin:$PATH"
 
 # Disable the creation of virtual environment by Poetry
 RUN poetry config virtualenvs.create false
