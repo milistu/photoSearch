@@ -2,10 +2,11 @@ version: '3'
 
 services:
   web:
-    build: .
+    build: backend/
     environment: 
       APP_PORT: 8000
     ports:
       - 8000:8000
     volumes:
-      - .:/user/src/app
+      - ./backend:/user/src/app
+      - ./images:/user/src/app/images
