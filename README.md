@@ -1,1 +1,1 @@
-# Search your photos with prompts
+# Search your photos with text 🔎
