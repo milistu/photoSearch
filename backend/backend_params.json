@@ -1,0 +1,11 @@
+{
+    "model" : {
+        "name_or_path" : "openai/clip-vit-base-patch32",
+        "weights_dir" : "./model_weights/",
+        "test_sentences" : [
+            "CLIP is a multi-modal vision and language model.",
+            "It can be used for image-text similarity and for zero-shot image classification."
+        ],
+        "test_image" : "./tests/alc_logo.png"
+    }
+}
