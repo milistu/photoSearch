@@ -10,6 +10,8 @@ python = "^3.10"
 fastapi = {extras = ["all"], version = "^0.110.0"}
 transformers = {extras = ["torch"], version = "^4.38.1"}
 pillow = "^10.2.0"
+qdrant-client = "^1.7.3"
+loguru = "^0.7.2"
 
 
 [build-system]
