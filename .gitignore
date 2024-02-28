@@ -162,3 +162,4 @@ cython_debug/
 images/*.png
 backend/model_weights
 .DS_Store
+qdrant_storage
