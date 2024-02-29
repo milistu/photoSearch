@@ -5,8 +5,16 @@ services:
     build: backend/
     environment: 
       APP_PORT: 8000
+      MODEL_URL: http://model:8001
     ports:
       - 8000:8000
     volumes:
       - ./backend:/user/src/app
+  
+  model:
+    build: model/
+    environment: 
+      APP_PORT: 8001
+    volumes:
+      - ./model:/user/src/app
       - ./images:/user/src/app/images
