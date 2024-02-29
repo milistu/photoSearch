@@ -1,63 +1,69 @@
-import io
+import os
 
-from utils import (
-    EmbeddingResponse,
-    HealtStatus,
-    get_device,
-    get_image_embeddings,
-    get_text_embeddings,
-    load_model,
-    load_params,
-)
+import requests
 from fastapi import FastAPI, File, UploadFile
-from PIL import Image
+from loguru import logger
+from utils import EmbeddingResponse, EnpointPaths, HealtStatus, load_params
 
+MODEL_URL = os.environ["MODEL_URL"]
 params = load_params()
-
-if params.model.device is None:
-    params.model.device = get_device()
-
-model, processor = load_model(
-    pretrained_model_name_or_path=params.model.name_or_path,
-    cache_dir=params.model.weights_dir,
-)
-model.to(device=params.model.device)
-
 
 app = FastAPI()
 
 
-@app.get("/")
+@app.get(EnpointPaths.ROOT)
 async def root():
+    print(f"Model endpoint url: {os.environ['MODEL_URL']}")
     return {"message": "Hello World"}
 
 
-@app.post("/embedding/text")
-async def embedding_text(input_text: str) -> EmbeddingResponse:
-    results = get_text_embeddings(
-        text_input=input_text, model=model, processor=processor
-    )
-
-    return EmbeddingResponse(type="text", shape=results.shape, value=results.tolist())
-
-
-@app.post("/embedding/image")
-async def embedding_image(image_file: UploadFile = File(...)) -> EmbeddingResponse:
-    image_bytes = await image_file.read()
-    input_image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
-    results = get_image_embeddings(
-        image_input=input_image, model=model, processor=processor
-    )
-
-    return EmbeddingResponse(type="image", shape=results.shape, value=results.tolist())
-
-
-@app.get("/health", response_model=HealtStatus)
+@app.get(EnpointPaths.HEALTH, response_model=HealtStatus)
 async def health_check() -> HealtStatus:
     db_status = True
-    model_status = True if model.name_or_path == params.model.name_or_path else False
-    overall_status = db_status and model_status
-    return HealtStatus(database=db_status, model=model_status, overall=overall_status)
+    response = requests.get(url=MODEL_URL + EnpointPaths.HEALTH)
+    if response.status_code == 200:
+        model_status = response.json()
+        print("Health Check:", model_status)
+    else:
+        print("Error:", response.text)
+
+    overall_status = db_status and model_status["healthy"]
+    return HealtStatus(
+        database=db_status, model=model_status["healthy"], overall=overall_status
+    )
+
+
+@app.post(EnpointPaths.EMBEDDING.TEXT)
+async def embedding_text(input_text: str) -> EmbeddingResponse:
+    data = {"input_text": input_text}
+    response = requests.post(url=MODEL_URL + EnpointPaths.EMBEDDING.TEXT, params=data)
+
+    if response.status_code == 200:
+        print("Text Embedding:", response.json())
+        logger.info("Text Embedding:", response.json())
+        return response.json()
+    else:
+        print("Error:", response.text)
+        logger.info("Error:", response.text)
+        return response.text
+
+
+@app.post(EnpointPaths.EMBEDDING.IMAGE)
+async def embedding_image(image_file: UploadFile = File(...)) -> EmbeddingResponse:
+    image_bytes = await image_file.read()
+    # input_image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
+    files = {"image_file": image_bytes}
+
+    response = requests.post(url=MODEL_URL + EnpointPaths.EMBEDDING.IMAGE, files=files)
+
+    if response.status_code == 200:
+        print("Image Embedding:", response.json())
+        logger.info("Image Embedding:", response.json())
+        return response.json()
+    else:
+        print("Error:", response.text)
+        logger.info("Error:", response.text)
+        return response.text
 
 
 if __name__ == "__main__":
