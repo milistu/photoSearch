@@ -34,7 +34,7 @@ async def root():
 
 @app.get("/health", response_model=HealtStatus)
 async def health_check() -> HealtStatus:
-    health_status =  model is not None and processor is not None
+    health_status = model is not None and processor is not None
     return HealtStatus(healthy=health_status)
 
 
@@ -56,8 +56,6 @@ async def embedding_image(image_file: UploadFile = File(...)) -> EmbeddingRespon
     )
 
     return EmbeddingResponse(type="image", shape=results.shape, value=results.tolist())
-
-
 
 
 if __name__ == "__main__":
