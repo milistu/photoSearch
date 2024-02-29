@@ -1,5 +1,11 @@
 # Search your photos with text 🔎
 
+## Poetry
+Add this to your `pyproject.toml` if you want to use Poetry only for dependency management.
+```bash
+[tool.poetry]
+package-mode = false
+```
 
 ## Qdrant
 
