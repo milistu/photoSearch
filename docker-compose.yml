@@ -5,7 +5,7 @@ services:
     build: server/
     environment: 
       APP_PORT: 8000
-      MODEL_URL: http://model:8001
+      MODEL_URL: http://ai_module:8001
       DB_URL: http://db
     ports:
       - 8000:8000
