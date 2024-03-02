@@ -2,19 +2,28 @@ version: '3'
 
 services:
   web:
-    build: backend/
+    build: server/
     environment: 
       APP_PORT: 8000
       MODEL_URL: http://model:8001
+      DB_URL: http://db
     ports:
       - 8000:8000
     volumes:
-      - ./backend:/user/src/app
+      - ./server:/user/src/app
   
-  model:
-    build: model/
+  ai_module:
+    build: ai_module/
     environment: 
       APP_PORT: 8001
     volumes:
-      - ./model:/user/src/app
+      - ./ai_module:/user/src/app
       - ./images:/user/src/app/images
+
+  db:
+    image: qdrant/qdrant
+    ports:
+      - 6333:6333
+      - 6334:6334
+    volumes:
+      - ./qdrant_storage:/qdrant/storage:z
