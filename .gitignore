@@ -160,7 +160,7 @@ cython_debug/
 #.idea/
 
 images/*.png
-model/model_weights
+ai_module/model_weights
 .DS_Store
 qdrant_storage
 venv*
