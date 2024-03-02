@@ -28,10 +28,15 @@ class EmbeddingEndpoints:
     IMAGE: str = "/embedding/image"
 
 
+class DatabaseEndpoints:
+    CREATE_COLLECTION: str = "/create/collection"
+
+
 class EnpointPaths:
     ROOT: str = "/"
     HEALTH: str = "/health"
     EMBEDDING = EmbeddingEndpoints
+    DATABASE = DatabaseEndpoints
 
 
 def load_params(params_path: Path = PARAMS_PATH) -> BackendParams:
