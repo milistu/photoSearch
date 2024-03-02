@@ -5,8 +5,16 @@ from fastapi import FastAPI, File, UploadFile
 from loguru import logger
 from utils import EmbeddingResponse, EnpointPaths, HealtStatus, load_params
 
+from qdrant_client import QdrantClient
+from qdrant_client.http.models import Distance, VectorParams
+
+
 MODEL_URL = os.environ["MODEL_URL"]
-params = load_params()
+DB_URL = os.environ["DB_URL"]
+# params = load_params()
+
+client = QdrantClient(location=DB_URL, port="6333")
+
 
 app = FastAPI()
 
@@ -15,6 +23,20 @@ app = FastAPI()
 async def root():
     print(f"Model endpoint url: {os.environ['MODEL_URL']}")
     return {"message": "Hello World"}
+
+
+@app.post(EnpointPaths.DATABASE.CREATE_COLLECTION)
+async def create_collection(collection_name: str) -> dict:
+    status = False
+    try:
+        status = client.create_collection(
+            collection_name=collection_name,
+            vectors_config=VectorParams(size=512, distance=Distance.COSINE),
+        )
+    except Exception as e:
+        logger.error(f"Error occured: {e}")
+
+    return {"Database": status}
 
 
 @app.get(EnpointPaths.HEALTH, response_model=HealtStatus)
