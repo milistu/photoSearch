@@ -1,7 +1,7 @@
 version: '3'
 
 services:
-  web:
+  server:
     build: server/
     environment: 
       APP_PORT: 8000
